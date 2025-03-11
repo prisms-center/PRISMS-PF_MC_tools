@@ -4,7 +4,7 @@ import yaml
 import pandas as pd
 
 def read_yaml_parameters(file_path, source_directory):
-    """Read parameters from the YAML file and add Calculation and Description columns."""
+    """Read parameters from the YAML file and add Calculation, Description, Observations, and additional file paths."""
     with open(file_path, 'r') as file:
         data = yaml.safe_load(file)
 
@@ -13,15 +13,49 @@ def read_yaml_parameters(file_path, source_directory):
     # Extract only the last part of the source directory
     calculation_name = os.path.basename(os.path.normpath(source_directory))
 
-    # Prompt user for description with a default value
-    user_description = input(f"Enter a description for {calculation_name} (press Enter to use default: '{calculation_name}'): ").strip()
-    if not user_description:
-        user_description = calculation_name  # Default to calculation name
+    # Prompt user for Description
+    user_description = input(f"Enter a description for {calculation_name} (press Enter to skip): ").strip()
 
-    # Add columns: c:Calculation, p:Description, and parameters with "p:" prefix
+    # Handle description file creation
+    description_file_path = os.path.join(source_directory, "description.txt")
+    description_relative_path = ""  # Default: empty
+
+    if user_description:
+        with open(description_file_path, "w") as desc_file:
+            desc_file.write(user_description)
+        # Store relative path with "/" ensuring it's correct
+        description_relative_path = os.path.join("/", calculation_name, "description.txt")
+
+    # Prompt user for Observations
+    user_observations = input(f"Enter observations for {calculation_name} (press Enter to skip): ").strip()
+
+    # Handle observations file creation
+    observations_file_path = os.path.join(source_directory, "observations.txt")
+    observations_relative_path = ""  # Default: empty
+
+    if user_observations:
+        with open(observations_file_path, "w") as obs_file:
+            obs_file.write(user_observations)
+        # Store relative path with "/"
+        observations_relative_path = os.path.join("/", calculation_name, "observations.txt")
+
+    # Automatically set additional file paths
+    code_relative_path = os.path.join("/", calculation_name, "code")
+    vtk_relative_path = os.path.join("/", calculation_name, "results", "vtk")
+    postprocess_relative_path = os.path.join("/", calculation_name, "results", "postprocess")
+    images_relative_path = os.path.join("/", calculation_name, "results", "images")
+    movies_relative_path = os.path.join("/", calculation_name, "results", "movies")
+
+    # Add columns: c:Calculation, file:Description:, file:Observations:, file paths, and parameters with "p:" prefix
     param_dict = {
         "c:Calculation": calculation_name,
-        "p:Description": user_description
+        "file:Description:": description_relative_path,  # Store file path if it exists
+        "file:Observations:": observations_relative_path,  # Store observations file path if exists
+        "file:Code:": code_relative_path,  # Relative path to code directory
+        "file:vtk_files:": vtk_relative_path,  # Relative path to vtk files
+        "file:Postprocess_files:": postprocess_relative_path,  # Relative path to postprocess files
+        "file:Images:": images_relative_path,  # Relative path to vtk files
+        "file:Movies": movies_relative_path  # Relative path to postprocess files
     }
     param_dict.update({f"p:{key}": value.get("value", "") for key, value in parameters.items()})
     
