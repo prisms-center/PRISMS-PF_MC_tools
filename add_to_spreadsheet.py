@@ -15,30 +15,20 @@ def read_yaml_parameters(file_path, source_directory):
 
     # Prompt user for Description
     user_description = input(f"Enter a description for {calculation_name} (press Enter to skip): ").strip()
-
-    # Handle description file creation
     description_file_path = os.path.join(source_directory, "description.txt")
-    description_relative_path = ""  # Default: empty
+    description_relative_path = os.path.join("/", calculation_name, "description.txt")
 
-    if user_description:
-        with open(description_file_path, "w") as desc_file:
-            desc_file.write(user_description)
-        # Store relative path with "/" ensuring it's correct
-        description_relative_path = os.path.join("/", calculation_name, "description.txt")
-
+    with open(description_file_path, "w") as desc_file:
+        desc_file.write(user_description)
+    
     # Prompt user for Observations
     user_observations = input(f"Enter observations for {calculation_name} (press Enter to skip): ").strip()
-
-    # Handle observations file creation
     observations_file_path = os.path.join(source_directory, "observations.txt")
-    observations_relative_path = ""  # Default: empty
+    observations_relative_path = os.path.join("/", calculation_name, "observations.txt")
 
-    if user_observations:
-        with open(observations_file_path, "w") as obs_file:
-            obs_file.write(user_observations)
-        # Store relative path with "/"
-        observations_relative_path = os.path.join("/", calculation_name, "observations.txt")
-
+    with open(observations_file_path, "w") as obs_file:
+        obs_file.write(user_observations)
+    
     # Automatically set additional file paths
     code_relative_path = os.path.join("/", calculation_name, "code")
     vtk_relative_path = os.path.join("/", calculation_name, "results", "vtk")
@@ -49,8 +39,8 @@ def read_yaml_parameters(file_path, source_directory):
     # Add columns: c:Calculation, file:Description:, file:Observations:, file paths, and parameters with "p:" prefix
     param_dict = {
         "c:Calculation": calculation_name,
-        "file:Description:": description_relative_path,  # Store file path if it exists
-        "file:Observations:": observations_relative_path,  # Store observations file path if exists
+        "file:Description:": description_relative_path,  # Store file path even if empty
+        "file:Observations:": observations_relative_path,  # Store observations file path even if empty
         "file:Code:": code_relative_path,  # Relative path to code directory
         "file:vtk_files:": vtk_relative_path,  # Relative path to vtk files
         "file:Postprocess_files:": postprocess_relative_path,  # Relative path to postprocess files
