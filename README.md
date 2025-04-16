@@ -19,7 +19,7 @@ $ mc init
 
 All of the scripts and commands below described below should be run under your **local project directory**.
 
-**Creating a data log file for the simulation**
+**Importing data from a simulation into the project directory**
 
 The script <code>importsim.sh</code> copies data from a source directory where the simulation code and results files are located into a new target directory (also called simulation directory) whithin your project directory
 Usage
@@ -45,7 +45,7 @@ Options:
 
 <code>--rename</code>      <code>\<target directory/></code>  If this option is not specified, the name of the <code>\<target directory\></code> will be the same as that of the <code>\<source directory\></code>.
 
-**Generate Simulation data/metadata file**
+**Generating a simulation data/metadata file**
 
 The script <code>generate_yaml.py</code> parses the <code>parameters.prm</code> file, extracts key-value-type triples, and generates a yaml-type file with the data.
 Usage
@@ -54,7 +54,7 @@ $ python generate_yaml.py <simulation directory>
 ```
 The script requires the python packages <code>re</code>, <code>ruamel</code>, and <code>argparse</code> to run. The yaml file (<code>simlog.yaml</code>) will be generated in the <code>\<simulation directory\></code>.
 
-**Scripts to generate image frames and movies**
+**Generating image frames and movies from the simulation results**
 
 The script <code>plot_series.py</code> uses the LLNL [visit](https://www.visitusers.org/index.php?title=Using_CLI) CLI to generate 2D pseudocolor frames (in png format)from a series of simulation's vtu/vtk files at different time increments. The user can specify the fields for which to generate the frames.
 Usage
@@ -69,16 +69,16 @@ Usage
 ```
 $ ./make_movies.sh <var1> <var2> ... <simulation directory>
 ```
-The list of variables, \<var1\> \<var2\> ... \<varN\>, must only include variables for which a set of images exist. 
+The list of variables, \<var1\> \<var2\> ... \<varN\>, must only include variables for which a set of images (created using <code>plot_series.py</code>) already exist. 
 
-**Script to generate ETL spreadsheet with simulation data**
+**Creating an ETL spreadsheet with simulation data**
 
 The script <code>add_to_spreadsheet.py</code> does the following tasks:
-1) Extract the simulation data and metadata from the file <code>\<simulation directory\></code><code>/simlog.yaml</code>.
+1) Extract the simulation data and metadata from the file <code>\<simulation directory\>/simlog.yaml</code>.
 2) Create an Excel file, <code>\<etl filename.xlsx\></code>, and write the simulation data in a single row, where each column corresponds to a different parameter.
 3) If the file <code>\<etl filename.xlsx\></code> already exists, the script opens the file and appends the simulation data in the first unpopulated row.
-4) Prompt the user for a description of the simulation and create the file <code>\<simulation directory\></code><code>/description.txt</code>. This file can be edited later or left empty.
-5) Prompt the user for observations pertaining to the simulation and create the files file <code>\<simulation directory\></code><code>/observations.txt</code>. This file can be edited lateror left empty.
+4) Prompt the user for a description of the simulation and create the file <code>\<simulation directory\>/description.txt</code>. This file can be edited later or left empty.
+5) Prompt the user for observations pertaining to the simulation and create the files file <code>\<simulation directory\>/observations.txt</code>. This file can be edited lateror left empty.
 6) Write columns indicating the paths to the code files and simulation files relative to the project directory. This will facilitate access to the data when <code>add_to_spreadsheet.py</code> is associated with a Materials Commons Study (formerly known as 'Experiment').
 
 Usage
