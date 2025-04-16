@@ -41,9 +41,9 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
 
 Options:
 
---move_vtk      Moves vtu or vtk files from <code>\<source directory\></code> to <code>\<target directory\></code> instead of copying them. This might be convenient to save space locally.
+<code>--move_vtk</code>    Moves vtu or vtk files from <code>\<source directory\></code> to <code>\<target directory\></code> instead of copying them. This might be convenient to save space locally.
 
---rename        <code>\<target directory/>code>  If this option is not specified, the name of the <code>\<target directory\></code> will be the same as that of the <code>\<source directory\></code>.
+<code>--rename</code>      <code>\<target directory/></code>  If this option is not specified, the name of the <code>\<target directory\></code> will be the same as that of the <code>\<source directory\></code>.
 
 **Generate Simulation data/metadata file**
 
@@ -69,7 +69,6 @@ Usage
 ```
 $ ./make_movies.sh <var1> <var2> ... <simulation directory>
 ```
-
 The list of variables, \<var1\> \<var2\> ... \<varN\>, must only include variables for which a set of images exist. 
 
 **Script to generate ETL spreadsheet with simulation data**
@@ -86,13 +85,10 @@ Usage
 ```
 $ python add_to_spreadsheet.py <simulation directory> <etl filename.xlsx>
 ```
-
 This script requires python packages <code>os</code>, <code>sys</code> and <code>yaml</code>, and <code>pandas</code>.
 
 After the steps above are carried out, all the simulation files and directories can be uploaded to Materials Commons under the remote directory
-
 ```
 $ mc up -r .
 ```
-
 This will essentially update the remote Materials Commons project with all the new files and subdirectories, without uploading existing files that have not been modified.
