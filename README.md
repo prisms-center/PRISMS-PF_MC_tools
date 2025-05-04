@@ -43,7 +43,7 @@ Options:
 
 <code>--move_vtk</code>    Moves vtu or vtk files from <code>\<source directory\></code> to <code>\<target directory\></code> instead of copying them. This might be convenient to save space locally.
 
-<code>--rename</code>      <code>\<target directory/></code>  If this option is not specified, the name of the <code>\<target directory\></code> will be the same as that of the <code>\<source directory\></code>.
+<code>--rename</code>      <code>\<target directory\></code>  If this option is not specified, the name of the <code>\<target directory\></code> will be the same as that of the <code>\<source directory\></code>.
 
 **Generating a simulation data/metadata file**
 
