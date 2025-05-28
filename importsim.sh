@@ -49,11 +49,9 @@ while [ -n "$1" ]; do
 	-h | --help)
 		echo "PRISMS-PF file organization for Materials Commons importing"
 		echo
-		echo "Usage: $0 [options]"
+		echo "Usage: $0 [options] SRC_DIR DST_DIR"
 		echo "Options:"
 		echo "  --copy=<ON/OFF> whether to copy or move *.vtu, *.pvtu, and *.vtk files (default = ${COPY_OUTPUT})"
-		echo "  -s <path>, --src=<path> the source directory."
-		echo "  -d <path>, --dst=<path> the target directory. (default = source directory)"
 		exit 0
 		;;
 
@@ -61,25 +59,17 @@ while [ -n "$1" ]; do
 		COPY_OUTPUT="${input#*=}"
 		;;
 
-	-s)
-		shift
-		SRC_DIR="${1}"
-		;;
-	-src=*)
-		SRC_DIR="${param#*=}"
-		;;
-
-	-d)
-		shift
-		DST_DIR="${1}"
-		;;
-	-dst=*)
-		DST_DIR="${param#*=}"
-		;;
-
 	*)
-		echo "Invalid command line option <$input>. See -h for more information."
-		exit 2
+		# If we haven't set SRC_DIR yet, this is the source
+		if [ -z "$SRC_DIR" ]; then
+			SRC_DIR="$input"
+		# If we have SRC_DIR but not DST_DIR, this is the destination
+		elif [ -z "$DST_DIR" ]; then
+			DST_DIR="$input"
+		else
+			color_echo ${BAD} "Invalid command line option <$input>. See -h for more information."
+			exit 2
+		fi
 		;;
 
 	esac
@@ -116,32 +106,47 @@ copy_or_move_files() {
 	local LOCAL_SRC=$2
 	local LOCAL_DST=$3
 	local COPY_FLAG=$4
+	local found_files=false
 
-	if compgen -G "${LOCAL_SRC}/${SRC_REGEX}" >/dev/null; then
-		if [ "${COPY_FLAG}" != "ON" ]; then
-			mv ${LOCAL_SRC}/${SRC_REGEX} "${LOCAL_DST}/"
-		else
-			cp ${LOCAL_SRC}/${SRC_REGEX} "${LOCAL_DST}/"
+	# Handle brace expansion patterns
+	for pattern in ${SRC_REGEX//,/ }; do
+		if compgen -G "${LOCAL_SRC}/${pattern}" >/dev/null; then
+			found_files=true
+			if [ "${COPY_FLAG}" != "ON" ]; then
+				mv ${LOCAL_SRC}/${pattern} "${LOCAL_DST}/"
+			else
+				cp ${LOCAL_SRC}/${pattern} "${LOCAL_DST}/"
+			fi
 		fi
-	else
+	done
+
+	if [ "$found_files" = false ]; then
 		echo
 		color_echo ${WARN} "No files matching '${SRC_REGEX}' found in ${LOCAL_SRC}"
 	fi
 }
 
-# Ensure SRC_DIR is set
+#############################################################
+# Main script
+
+# Check if SRC_DIR and DST_DIR are set
 if [ -z "$SRC_DIR" ]; then
 	color_echo ${BAD} "No source directory has been specified."
 	exit 1
 fi
-
-# Print some info about SRC_DIR and DST_DIR
-BASE_DIR=$(pwd)
 if [ -z "$DST_DIR" ]; then
-	DST_DIR=${SRC_DIR}
+	color_echo ${BAD} "No destination directory has been specified."
+	exit 1
 fi
-SRC_DIR=${BASE_DIR}/${SRC_DIR}
-DST_DIR=${BASE_DIR}/${DST_DIR}
+
+# First expand any shell variables and home directory
+SRC_DIR=$(eval echo "${SRC_DIR}")
+DST_DIR=$(eval echo "${DST_DIR}")
+
+# Then convert to absolute path
+SRC_DIR=$(realpath "${SRC_DIR}")
+DST_DIR=$(realpath "${DST_DIR}")
+
 echo
 color_echo ${INFO} "Source directory: ${SRC_DIR}"
 color_echo ${INFO} "Destination directory: ${DST_DIR}"
@@ -149,26 +154,23 @@ echo
 
 # Collect the various subfolders that we organize data into
 CODE_DIR="${DST_DIR}/code"
-RESULTS_DIR="${DST_DIR}/results"
-OUTPUT_DIR="${RESULTS_DIR}/vtk"
-IMAGE_DIR="${RESULTS_DIR}/images"
-MOVIE_DIR="${RESULTS_DIR}/movies"
-POSTPROCESS_DIR="${RESULTS_DIR}/postprocess"
+DATA_DIR="${DST_DIR}/data"
+OUTPUT_DIR="${DATA_DIR}/vtk"
+IMAGE_DIR="${DATA_DIR}/images"
+MOVIE_DIR="${DATA_DIR}/movies"
+POSTPROCESS_DIR="${DATA_DIR}/postprocess"
 
 # Create the DST_DIR and ask if we have to overwrite files
 check_and_create_dir "${DST_DIR}"
 quit_if_fail "Failed to create destination directory."
 
 # Make the subfolders
-mkdir -p ${CODE_DIR} ${RESULTS_DIR} ${OUTPUT_DIR} ${IMAGE_DIR} ${MOVIE_DIR} ${POSTPROCESS_DIR}
+mkdir -p ${CODE_DIR} ${DATA_DIR} ${OUTPUT_DIR} ${IMAGE_DIR} ${MOVIE_DIR} ${POSTPROCESS_DIR}
 quit_if_fail "Failed to create subfolders in destination directory."
 
 # Organizing files
-copy_or_move_files "*.cc" "${SRC_DIR}" "${CODE_DIR}" "ON"
-copy_or_move_files "*.h" "${SRC_DIR}" "${CODE_DIR}" "ON"
-copy_or_move_files "*.prm" "${SRC_DIR}" "${CODE_DIR}" "ON"
-copy_or_move_files "*.vtk" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
-copy_or_move_files "*.vtu" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
+copy_or_move_files "*.cc,*.c,*.cpp,*.cxx,*.h,*.hpp,*.prm,*.py,*.sh,*.json,*.yaml,*.yml" "${SRC_DIR}" "${CODE_DIR}" "ON"
+copy_or_move_files "*.vtk,*.vtu,*.pvtu" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
 copy_or_move_files "*.md" "${SRC_DIR}" "${DST_DIR}" "ON"
 
 # Special case: Handle single file copy for CMakeLists.txt and integratedFields.txt
