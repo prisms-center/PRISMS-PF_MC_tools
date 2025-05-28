@@ -34,10 +34,10 @@ OpenDatabase(dbname_pf)
 
 for var in variables:
     print(f"Plotting variable: {var}")
-    
+
     # Delete previous plots before adding a new one
     DeleteAllPlots()
-    
+
     # Add plot for the current variable
     AddPlot("Pseudocolor", var)
     DrawPlots()
