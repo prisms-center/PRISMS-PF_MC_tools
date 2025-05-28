@@ -135,8 +135,10 @@ if [ -z "$SRC_DIR" ]; then
 	exit 1
 fi
 if [ -z "$DST_DIR" ]; then
-	color_echo ${BAD} "No destination directory has been specified."
-	exit 1
+	# Get the last folder name from SRC_DIR
+	LAST_FOLDER=$(basename "${SRC_DIR}")
+	DST_DIR="./${LAST_FOLDER}"
+	color_echo ${INFO} "No destination specified, using relative path: ${DST_DIR}"
 fi
 
 # First expand any shell variables and home directory
