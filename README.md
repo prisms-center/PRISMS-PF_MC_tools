@@ -19,21 +19,21 @@ $ mc init
 
 All of the scripts and commands below described below should be run under your **local project directory**.
 
-**Importing data from a simulation into the project directory**
+## Importing data from a simulation into the project directory
 
-The script <code>importsim.sh</code> copies data from a source directory where the simulation code and results files are located into a new target directory (also called simulation directory) whithin your project directory
+The script <code>importsim.sh</code> copies data from a source directory where the simulation code and data files are located into a new destination directory within your project directory.
 Usage
 ```
-$ ./importsim.sh [--move_vtk] <source directory> [--rename] <target directory>
+$ ./importsim.sh --copy=<ON/OFF> <source directory> <destination directory>
 ```
-This will copy most of the contents of <code>\<source directory\></code> into <code>\<target directory\></code> but orgazing the files the following way
+This will copy most of the contents of <code>\<source directory\></code> into <code>\<destination directory\></code>, organizing the files in the following way
 
 ├── **project directory** <br>
-           ├── **simulation directory** (target directory) <br>
+           ├── **simulation directory** (destination directory) <br>
                       ├── **code** <br>
                       ├── description.txt <br>
                       ├── observations.txt <br>
-                      ├── **results** <br>
+                      ├── **data** <br>
                                  ├── **images** <br>
                                  ├── **movies** <br>
                                  ├── **postprocess** <br>
@@ -41,11 +41,11 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
 
 Options:
 
-<code>--move_vtk</code>    Moves vtu or vtk files from <code>\<source directory\></code> to <code>\<target directory\></code> instead of copying them. This might be convenient to save space locally.
+<code>--copy=<ON/OFF></code> Moves vtu, vtk, and pvtu files from <code>\<source directory\></code> to <code>\<destination directory\></code> instead of copying them.
 
-<code>--rename</code>      <code>\<target directory\></code>  If this option is not specified, the name of the <code>\<target directory\></code> will be the same as that of the <code>\<source directory\></code>.
+<code>\<destination directory></code> The destination directory. If this is left blank, the script will use the last folder of the <code>\<source directory\></code>.
 
-**Generating a simulation data/metadata file**
+## Generating a simulation data/metadata file
 
 The script <code>generate_yaml.py</code> parses the <code>parameters.prm</code> file, extracts key-value-type triples, and generates a yaml-type file with the data.
 Usage
@@ -54,7 +54,7 @@ $ python generate_yaml.py <simulation directory>
 ```
 The script requires the python packages <code>re</code>, <code>ruamel</code>, and <code>argparse</code> to run. The yaml file (<code>simlog.yaml</code>) will be generated in the <code>\<simulation directory\></code>.
 
-**Generating image frames and movies from the simulation results**
+## Generating image frames and movies from the simulation results
 
 The script <code>plot_series.py</code> uses the LLNL [visit](https://www.visitusers.org/index.php?title=Using_CLI) CLI to generate 2D pseudocolor frames (in png format)from a series of simulation's vtu/vtk files at different time increments. The user can specify the fields for which to generate the frames.
 Usage
@@ -71,7 +71,7 @@ $ ./make_movies.sh <var1> <var2> ... <simulation directory>
 ```
 The list of variables, \<var1\> \<var2\> ... \<varN\>, must only include variables for which a set of images (created using <code>plot_series.py</code>) already exist. 
 
-**Creating an ETL spreadsheet with simulation data**
+## Creating an ETL spreadsheet with simulation data
 
 The script <code>add_to_spreadsheet.py</code> does the following tasks:
 1) Extract the simulation data and metadata from the file <code>\<simulation directory\>/simlog.yaml</code>.
