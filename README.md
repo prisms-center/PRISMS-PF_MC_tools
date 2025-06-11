@@ -29,16 +29,19 @@ $ ./importsim.sh --copy=<ON/OFF> <source directory> <destination directory>
 This will copy most of the contents of <code>\<source directory\></code> into <code>\<destination directory\></code>, organizing the files in the following way
 
 ├── **project directory** <br>
-           ├── **simulation directory** (destination directory) <br>
-                      ├── **code** <br>
-                      ├── description.txt <br>
-                      ├── observations.txt <br>
-                      ├── **data** <br>
-                                 ├── **images** <br>
-                                 ├── **movies** <br>
-                                 ├── **postprocess** <br>
-                                 ├── **vtk** <br>
-
+           ├── **study directory 1** <br>
+                     ├── **simulation directory 1** (destination directory) <br>
+                                ├── **code** <br>
+                                ├── description.txt <br>
+                                ├── observations.txt <br>
+                                ├── **data** <br>
+                                           ├── **images** <br>
+                                           ├── **movies** <br>
+                                           ├── **postprocess** <br>
+                                           ├── **vtk** <br>
+                      ├── **simulation directory 2** (destination directory) <br>
+           ├── **study directory 2** <br>
+           
 Options:
 
 <code>--copy=<ON/OFF></code> Moves vtu, vtk, and pvtu files from <code>\<source directory\></code> to <code>\<destination directory\></code> instead of copying them.
