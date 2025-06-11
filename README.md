@@ -30,17 +30,16 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
 
 ├── **project directory** <br>
            ├── **study directory 1** <br>
-                     ├── **simulation directory 1** (destination directory) <br>
-                                ├── **code** <br>
-                                ├── description.txt <br>
-                                ├── observations.txt <br>
-                                ├── **data** <br>
-                                           ├── **images** <br>
-                                           ├── **movies** <br>
-                                           ├── **postprocess** <br>
-                                           ├── **vtk** <br>
-                      ├── **simulation directory 2** (destination directory) <br>
-           ├── **study directory 2** <br>
+                      ├── **simulation directory 1** (destination directory) <br>
+                                 ├── **code** <br>
+                                 ├── description.txt <br>
+                                 ├── observations.txt <br>
+                                 ├── **data** <br>
+                                            ├── **images** <br>
+                                            ├── **movies** <br>
+                                            ├── **postprocess** <br>
+                                            ├── **vtk** <br>
+                      ├── **simulation directory 2** (destination directory) <br>
            
 Options:
 
