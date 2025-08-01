@@ -3,13 +3,12 @@
 import sys
 import os
 
-# Check if running inside Visit
+# Check if running outside Visit and relaunch using Visit CLI
 if "VISITDIR" not in os.environ:
-    # Relaunch the script using Visit CLI
-    visit_cmd = f"visit -cli -nowin -s {sys.argv[0]} " + " ".join(sys.argv[1:])
-    print(f"Running Visit CLI: {visit_cmd}")
+    visit_cmd = "visit -cli -nowin -s {} {}".format(sys.argv[0], " ".join(sys.argv[1:]))
+    print("Running Visit CLI: {}".format(visit_cmd))
     os.system(visit_cmd)
-    sys.exit(0)  # Exit after launching Visit
+    sys.exit(0)
 
 # Now inside Visit CLI, import Visit modules
 from visit import *
