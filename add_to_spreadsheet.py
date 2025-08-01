@@ -38,12 +38,12 @@ def read_yaml_parameters(file_path, source_directory):
 
     # Automatically set additional file paths
     code_relative_path = os.path.join("/", calculation_name, "code")
-    vtk_relative_path = os.path.join("/", calculation_name, "results", "vtk")
+    vtk_relative_path = os.path.join("/", calculation_name, "data", "vtk")
     postprocess_relative_path = os.path.join(
-        "/", calculation_name, "results", "postprocess"
+        "/", calculation_name, "data", "postprocess"
     )
-    images_relative_path = os.path.join("/", calculation_name, "results", "images")
-    movies_relative_path = os.path.join("/", calculation_name, "results", "movies")
+    images_relative_path = os.path.join("/", calculation_name, "data", "images")
+    movies_relative_path = os.path.join("/", calculation_name, "data", "movies")
 
     # Add columns: c:Calculation, file:Description:, file:Observations:, file paths, and parameters with "p:" prefix
     param_dict = {

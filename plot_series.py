@@ -29,7 +29,7 @@ print(f"Simulation directory: {sim_dir}")
 print(f"Variables to plot: {variables}")
 
 # Step 1: Open a database (the whole .vtu time series)
-dbname_pf = sim_dir + "/results/vtk/solution-*.vtu database"
+dbname_pf = sim_dir + "/data/vtk/solution-*.vtu database"
 OpenDatabase(dbname_pf)
 
 for var in variables:
@@ -54,7 +54,7 @@ for var in variables:
 
         # Set save window attributes
         SaveWindowAtts = SaveWindowAttributes()
-        SaveWindowAtts.fileName = f"{sim_dir}/results/images/{var}_frame_{states}"
+        SaveWindowAtts.fileName = f"{sim_dir}/data/images/{var}_frame_{states}"
         SetSaveWindowAttributes(SaveWindowAtts)
         SaveWindow()
 
