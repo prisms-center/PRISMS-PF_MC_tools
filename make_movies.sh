@@ -60,11 +60,16 @@ for field in "${@:1:$#-1}"; do
         continue
     fi
 
-    # Generate movie using ffmpeg
-    ffmpeg -r "$frame_rate" -fflags +genpts -f concat -safe 0 -i "$list_file" -fps_mode vfr -c:v libx264 -pix_fmt yuv420p -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" "$output_movie"
+    # Generate movie using ffmpeg (without -fps_mode for compatibility with ffmpeg < 5.0)
+    ffmpeg -r "$frame_rate" -fflags +genpts -f concat -safe 0 -i "$list_file" \
+           -c:v libx264 -pix_fmt yuv420p \
+           -vf "scale=trunc(iw/2)*2:trunc(ih/2)*2" \
+           "$output_movie"
 
     # Remove the temporary list file
     rm "$list_file"
+
+    echo "Movie written to: $output_movie"
 done
 
-echo "Movies generated successfully with frame rate: $frame_rate"
+echo "✅ Movies generated successfully with frame rate: $frame_rate"
