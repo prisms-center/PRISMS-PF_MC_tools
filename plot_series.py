@@ -24,15 +24,15 @@ sim_dir = sys.argv[-1]
 # Variables to plot (all arguments except the last one)
 variables = sys.argv[1:-1]
 
-print(f"Simulation directory: {sim_dir}")
-print(f"Variables to plot: {variables}")
+print("Simulation directory: {}".format(sim_dir))
+print("Variables to plot: {}".format(variables))
 
 # Step 1: Open a database (the whole .vtu time series)
-dbname_pf = sim_dir + "/data/vtk/solution-*.vtu database"
+dbname_pf = "{}/data/vtk/solution-*.vtu database".format(sim_dir)
 OpenDatabase(dbname_pf)
 
 for var in variables:
-    print(f"Plotting variable: {var}")
+    print("Plotting variable: {}".format(var))
 
     # Delete previous plots before adding a new one
     DeleteAllPlots()
@@ -42,18 +42,19 @@ for var in variables:
     DrawPlots()
 
     # Animate through time and save results
-    for states in range(TimeSliderGetNStates()):
+    for state in range(TimeSliderGetNStates()):
         # Set slider to state
-        SetTimeSliderState(states)
+        SetTimeSliderState(state)
+
         # Get the time corresponding to the state
         Query("Time")
-        # Assign this time to the variable "t"
         t = GetQueryOutputValue()
-        print(f"Saving frame {states}, time {t:.1f} for variable {var}")
+
+        print("Saving frame {}, time {:.1f} for variable {}".format(state, t, var))
 
         # Set save window attributes
         SaveWindowAtts = SaveWindowAttributes()
-        SaveWindowAtts.fileName = f"{sim_dir}/data/images/{var}_frame_{states}"
+        SaveWindowAtts.fileName = "{}/data/images/{}_frame_{}".format(sim_dir, var, state)
         SetSaveWindowAttributes(SaveWindowAtts)
         SaveWindow()
 
