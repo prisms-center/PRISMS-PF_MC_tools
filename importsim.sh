@@ -134,20 +134,41 @@ if [ -z "$SRC_DIR" ]; then
 	color_echo ${BAD} "No source directory has been specified."
 	exit 1
 fi
-if [ -z "$DST_DIR" ]; then
-	# Get the last folder name from SRC_DIR
-	LAST_FOLDER=$(basename "${SRC_DIR}")
-	DST_DIR="./${LAST_FOLDER}"
-	color_echo ${INFO} "No destination specified, using relative path: ${DST_DIR}"
+
+# Expand any shell variables and home directory in SRC_DIR
+SRC_DIR=$(eval echo "${SRC_DIR}")
+
+# Convert SRC_DIR to absolute path
+SRC_DIR=$(realpath "${SRC_DIR}")
+SRC_BASENAME=$(basename "${SRC_DIR}")
+
+# Handle DST_DIR according to the 4 rules
+if [ -z "$DST_DIR" ] || [ "$DST_DIR" == "." ]; then
+	# Rule 1: If DST_DIR is "." or empty, create a new directory with SRC name inside current directory
+	DST_DIR="./${SRC_BASENAME}"
+elif [[ ! "$DST_DIR" = /* && -d "$DST_DIR" ]]; then
+	# Rule 3: If DST_DIR is an existing directory within working dir (and not absolute path), create a subdir inside it
+	DST_DIR="${DST_DIR}/${SRC_BASENAME}"
 fi
 
-# First expand any shell variables and home directory
-SRC_DIR=$(eval echo "${SRC_DIR}")
+# Expand and convert DST_DIR to absolute path (portable version)
 DST_DIR=$(eval echo "${DST_DIR}")
+ALREADY_EXISTS=false
+if [ -d "$DST_DIR" ]; then
+	ALREADY_EXISTS=true
+fi
 
-# Then convert to absolute path
-SRC_DIR=$(realpath "${SRC_DIR}")
-DST_DIR=$(realpath "${DST_DIR}")
+mkdir -p "$DST_DIR" || { echo "Failed to create DST_DIR"; exit 1; }
+DST_DIR=$(cd "$DST_DIR" && pwd)
+
+# Sanity check
+[ -z "$DST_DIR" ] && echo "DST_DIR is empty! Aborting..." && exit 1
+
+# Prompt only if it already existed
+if [ "$ALREADY_EXISTS" = true ]; then
+	check_and_create_dir "${DST_DIR}"
+	quit_if_fail "Failed to confirm overwrite for destination directory."
+fi
 
 echo
 color_echo ${INFO} "Source directory: ${SRC_DIR}"
@@ -161,10 +182,6 @@ OUTPUT_DIR="${DATA_DIR}/vtk"
 IMAGE_DIR="${DATA_DIR}/images"
 MOVIE_DIR="${DATA_DIR}/movies"
 POSTPROCESS_DIR="${DATA_DIR}/postprocess"
-
-# Create the DST_DIR and ask if we have to overwrite files
-check_and_create_dir "${DST_DIR}"
-quit_if_fail "Failed to create destination directory."
 
 # Make the subfolders
 mkdir -p ${CODE_DIR} ${DATA_DIR} ${OUTPUT_DIR} ${IMAGE_DIR} ${MOVIE_DIR} ${POSTPROCESS_DIR}
