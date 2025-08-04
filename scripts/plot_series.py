@@ -28,7 +28,7 @@ print("Simulation directory: {}".format(sim_dir))
 print("Variables to plot: {}".format(variables))
 
 # Step 1: Open a database (the whole .vtu time series)
-dbname_pf = "{}/data/vtk/solution-*.vtu database".format(sim_dir)
+dbname_pf = "{}/data/vtk/solution*.vtu database".format(sim_dir)
 OpenDatabase(dbname_pf)
 
 for var in variables:
