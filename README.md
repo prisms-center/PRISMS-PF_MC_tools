@@ -26,7 +26,7 @@ $ mcpf
 ```
 to see the available tools. 
 
-To uninstall the tools type
+To uninstall the tools, type
 ```
 $ make uninstall
 ```
