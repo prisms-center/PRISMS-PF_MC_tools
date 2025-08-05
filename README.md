@@ -20,11 +20,17 @@ $ cd PRISMS-PF_MC_tools
 ```
 $ make install
 ```
-After the tools have been instaled you should be able to run them from any directory. Type
+After the tools have been installed you should be able to run them from any directory. Type
 ```
 $ mcpf
 ```
 to see the available tools. 
+
+To uninstall the tools type
+```
+$ make uninstall
+```
+from the ```PRISMS-PF_MC_tools``` directory.
 
 To take full advantage of these tools you should:
 
@@ -79,7 +85,7 @@ The script requires the python packages <code>re</code>, <code>ruamel</code>, an
 The script <code>plot_series</code> uses the LLNL [visit](https://www.visitusers.org/index.php?title=Using_CLI) CLI to generate 2D pseudocolor frames (in png format)from a series of simulation's vtu/vtk files at different time increments. The user can specify the fields for which to generate the frames.
 Usage
 ```
-$ mcpf plot_series.py <var1> <var2> ... <simulation directory>
+$ mcpf plot_series <var1> <var2> ... <simulation directory>
 ```
 This script requires python packages <code>os</code>, <code>sys</code> and <code>visit</code>.
 
@@ -87,7 +93,7 @@ The script <code>make_movies</code> uses the [ffmpeg](https://ffmpeg.org/) packa
 
 Usage
 ```
-$ mcpf <var1> <var2> ... <simulation directory>
+$ mcpf make_movies <var1> <var2> ... <simulation directory>
 ```
 The list of variables, \<var1\> \<var2\> ... \<varN\>, must only include variables for which a set of images (created using <code>plot_series</code>) already exist. 
 
