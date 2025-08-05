@@ -1,0 +1,26 @@
+#!/bin/bash
+
+SCRIPT_DIR="$(dirname "$(realpath "$0")")/scripts"
+CMD="$1"
+shift
+
+if [ -z "$CMD" ]; then
+    echo "Usage: mcpf <script> [args...]"
+    echo "Available commands:"
+    for f in "$SCRIPT_DIR"/*; do
+        echo "  $(basename "${f%.*}")"
+    done
+    exit 1
+fi
+
+SCRIPT_PATH="$SCRIPT_DIR/$CMD.sh"
+if [ ! -f "$SCRIPT_PATH" ]; then
+    SCRIPT_PATH="$SCRIPT_DIR/$CMD.py"
+fi
+
+if [ ! -x "$SCRIPT_PATH" ]; then
+    echo "Error: Command '$CMD' not found or not executable."
+    exit 1
+fi
+
+exec "$SCRIPT_PATH" "$@"

@@ -188,7 +188,7 @@ mkdir -p ${CODE_DIR} ${DATA_DIR} ${OUTPUT_DIR} ${IMAGE_DIR} ${MOVIE_DIR} ${POSTP
 quit_if_fail "Failed to create subfolders in destination directory."
 
 # Organizing files
-copy_or_move_files "*.cc,*.c,*.cpp,*.cxx,*.h,*.hpp,*.prm,*.py,*.sh,*.json,*.yaml,*.yml" "${SRC_DIR}" "${CODE_DIR}" "ON"
+copy_or_move_files "*.cc,*.c,*.cpp,*.cxx,*.h,*.in,*.hpp,*.prm,*.py,*.sh,*.json,*.yaml,*.yml" "${SRC_DIR}" "${CODE_DIR}" "ON"
 copy_or_move_files "*.vtk,*.vtu,*.pvtu" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
 copy_or_move_files "*.md" "${SRC_DIR}" "${DST_DIR}" "ON"
 
