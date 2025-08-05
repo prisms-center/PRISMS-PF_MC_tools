@@ -78,7 +78,7 @@ Usage
 ```
 $ mcpf generate_yaml <simulation directory> 
 ```
-The script requires the python packages <code>re</code>, <code>ruamel</code>, and <code>argparse</code> to run. The yaml file (<code>simlog.yaml</code>) will be generated in the <code>\<simulation directory\></code>.
+The script requires the python packages <code>re</code>, <code>ruamel.yaml</code>, and <code>argparse</code> to run. The yaml file (<code>simlog.yaml</code>) will be generated in the <code>\<simulation directory\></code>.
 
 ## Generating image frames and movies from the simulation results
 
