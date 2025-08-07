@@ -20,21 +20,18 @@ def read_yaml_parameters(file_path, source_directory):
     user_description = input(
         f"Enter a description for {calculation_name} (press Enter to skip): "
     ).strip()
-    description_file_path = os.path.join(source_directory, "description.txt")
-    description_relative_path = os.path.join("/", calculation_name, "description.txt")
-
-    with open(description_file_path, "w") as desc_file:
-        desc_file.write(user_description)
 
     # Prompt user for Observations
     user_observations = input(
         f"Enter observations for {calculation_name} (press Enter to skip): "
     ).strip()
-    observations_file_path = os.path.join(source_directory, "observations.txt")
-    observations_relative_path = os.path.join("/", calculation_name, "observations.txt")
 
-    with open(observations_file_path, "w") as obs_file:
-        obs_file.write(user_observations)
+    # Write both to Info.md
+    info_file_path = os.path.join(source_directory, "Info.md")
+    info_relative_path = os.path.join("/", calculation_name, "Info.md")
+    with open(info_file_path, "w") as info_file:
+        info_file.write(f"# Description\n{user_description}\n\n")
+        info_file.write(f"# Observations\n{user_observations}\n")
 
     # Automatically set additional file paths
     code_relative_path = os.path.join("/", calculation_name, "code")
@@ -45,16 +42,15 @@ def read_yaml_parameters(file_path, source_directory):
     images_relative_path = os.path.join("/", calculation_name, "data", "images")
     movies_relative_path = os.path.join("/", calculation_name, "data", "movies")
 
-    # Add columns: c:Calculation, file:Description:, file:Observations:, file paths, and parameters with "p:" prefix
+    # Add columns: c:Calculation, file:Info:, file paths, and parameters with "p:" prefix
     param_dict = {
         "c:Calculation": calculation_name,
-        "file:Description:": description_relative_path,  # Store file path even if empty
-        "file:Observations:": observations_relative_path,  # Store observations file path even if empty
-        "file:Code:": code_relative_path,  # Relative path to code directory
-        "file:vtk_files:": vtk_relative_path,  # Relative path to vtk files
-        "file:Postprocess_files:": postprocess_relative_path,  # Relative path to postprocess files
-        "file:Images:": images_relative_path,  # Relative path to vtk files
-        "file:Movies": movies_relative_path,  # Relative path to postprocess files
+        "file:Info:": info_relative_path,
+        "file:Code:": code_relative_path,
+        "file:vtk_files:": vtk_relative_path,
+        "file:Postprocess_files:": postprocess_relative_path,
+        "file:Images:": images_relative_path,
+        "file:Movies": movies_relative_path,
     }
     param_dict.update(
         {f"p:{key}": value.get("value", "") for key, value in parameters.items()}
