@@ -2,6 +2,7 @@
 
 import sys
 import os
+import glob
 
 # Check if running outside Visit and relaunch using Visit CLI
 if "VISITDIR" not in os.environ:
@@ -28,7 +29,18 @@ print("Simulation directory: {}".format(sim_dir))
 print("Variables to plot: {}".format(variables))
 
 # Step 1: Open a database (the whole .vtu time series)
-dbname_pf = "{}/data/vtk/solution_*.vtu database".format(sim_dir)
+# Step 1: Detect available .vtu database pattern
+vtk_dir = os.path.join(sim_dir, "data", "vtk")
+
+if len(glob.glob(os.path.join(vtk_dir, "solution_*.vtu"))) > 0:
+    dbname_pf = f"{vtk_dir}/solution_*.vtu database"
+elif len(glob.glob(os.path.join(vtk_dir, "solution-*.vtu"))) > 0:
+    dbname_pf = f"{vtk_dir}/solution-*.vtu database"
+else:
+    print("Error: No .vtu files found matching either 'solution_*.vtu' or 'solution-*.vtu'")
+    sys.exit(1)
+
+print(f"Opening database: {dbname_pf}")
 OpenDatabase(dbname_pf)
 
 for var in variables:
