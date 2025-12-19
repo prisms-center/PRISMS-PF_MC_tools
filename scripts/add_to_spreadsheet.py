@@ -63,31 +63,43 @@ def write_to_excel(param_dict, target_file):
     """Write parameters to an Excel file, creating headers if the file does not exist."""
     df_new = pd.DataFrame([param_dict])
 
+    # Sheet name = file name without extension
+    sheet_name1 = os.path.splitext(os.path.basename(target_file),)[0]
+
     if not os.path.exists(target_file):
         # Create a new file with headers
-        df_new.to_excel(target_file, index=False)
+        df_new.to_excel(target_file, index=False, sheet_name=sheet_name1)
         print(f"Created new file: {target_file}")
-    else:
-        # Append without writing headers again
-        existing_df = pd.read_excel(target_file)
+        return
+
+    with pd.ExcelWriter(
+        target_file, mode="a", engine="openpyxl", if_sheet_exists="overlay"
+    ) as writer:
+        # If the sheet doesn't exist, create it with headers
+        if sheet_name1 not in writer.book.sheetnames:
+            df_new.to_excel(writer, index=False, sheet_name=sheet_name1)
+            print(f"Added new sheet '{sheet_name}' in: {target_file}")
+            return
+        
+        # Sheet exists: read existing sheet to check columns
+        existing_df = pd.read_excel(target_file, sheet_name=sheet_name1)
 
         # Ensure the new data matches the existing columns
         if not set(df_new.columns).issubset(set(existing_df.columns)):
             print("Error: New parameters do not match existing file structure.")
             return
+        
+        startrow = writer.sheets[sheet_name1].max_row
+        
+        df_new.to_excel(
+            writer,
+            index=False,
+            header=False,
+            sheet_name=sheet_name1,
+            startrow=writer.sheets[sheet_name1].max_row,
+        )
 
-        with pd.ExcelWriter(
-            target_file, mode="a", engine="openpyxl", if_sheet_exists="overlay"
-        ) as writer:
-            df_new.to_excel(
-                writer,
-                index=False,
-                header=False,
-                startrow=writer.sheets["Sheet1"].max_row,
-            )
-
-        print(f"Appended data to: {target_file}")
-
+    print(f"Appended data to: {target_file}")
 
 def main():
     if len(sys.argv) != 3:
