@@ -3,7 +3,7 @@
 #############################################################
 # Grab the date and start a global timer
 if builtin command -v gdate >/dev/null; then
-	DATE_CMD=$(which gdata)
+	DATE_CMD=$(which gdate)
 else
 	DATE_CMD=$(which date)
 fi
@@ -21,10 +21,12 @@ BOLD="\033[1m"
 
 # Color echo
 color_echo() {
-	COLOR=$1
-	shift
-	echo -e "${COLOR}$@\033[0m"
+    local COLOR=$1
+    shift
+    echo -e "${COLOR}$*\033[0m"
+    # or: echo -e "${COLOR}$@\033[0m" is mostly fine, but $* is often nicer here
 }
+
 
 # Exit with some useful information
 quit_if_fail() {
@@ -102,29 +104,48 @@ check_and_create_dir() {
 
 # Function to copy or move files with error handling
 copy_or_move_files() {
-	local SRC_REGEX=$1
-	local LOCAL_SRC=$2
-	local LOCAL_DST=$3
-	local COPY_FLAG=$4
-	local found_files=false
+    local SRC_REGEX=$1
+    local LOCAL_SRC=$2
+    local LOCAL_DST=$3
+    local COPY_FLAG=$4
+    local found_files=false
 
-	# Handle brace expansion patterns
-	for pattern in ${SRC_REGEX//,/ }; do
-		if compgen -G "${LOCAL_SRC}/${pattern}" >/dev/null; then
-			found_files=true
-			if [ "${COPY_FLAG}" != "ON" ]; then
-				mv ${LOCAL_SRC}/${pattern} "${LOCAL_DST}/"
-			else
-				cp ${LOCAL_SRC}/${pattern} "${LOCAL_DST}/"
-			fi
-		fi
-	done
+    # Split on commas safely (no glob expansion)
+    local patterns=()
+    IFS=',' read -r -a patterns <<< "$SRC_REGEX"
 
-	if [ "$found_files" = false ]; then
-		echo
-		color_echo ${WARN} "No files matching '${SRC_REGEX}' found in ${LOCAL_SRC}"
-	fi
+    # Enable nullglob only for the LOCAL_SRC expansion
+    local old_nullglob
+    old_nullglob=$(shopt -p nullglob 2>/dev/null)
+    shopt -s nullglob
+
+    local pattern
+    for pattern in "${patterns[@]}"; do
+        # Expand the glob inside LOCAL_SRC into an array (space-safe)
+        local files=( "$LOCAL_SRC"/$pattern )
+
+        if ((${#files[@]})); then
+            found_files=true
+            local f
+            for f in "${files[@]}"; do
+                if [ "$COPY_FLAG" != "ON" ]; then
+                    mv -- "$f" "$LOCAL_DST"/
+                else
+                    cp -- "$f" "$LOCAL_DST"/
+                fi
+            done
+        fi
+    done
+
+    # Restore nullglob setting
+    eval "$old_nullglob" 2>/dev/null || true
+
+    if [ "$found_files" = false ]; then
+        echo
+        color_echo "${WARN}" "No files matching '${SRC_REGEX}' found in ${LOCAL_SRC}"
+    fi
 }
+
 
 #############################################################
 # Main script
@@ -184,7 +205,7 @@ MOVIE_DIR="${DATA_DIR}/movies"
 POSTPROCESS_DIR="${DATA_DIR}/postprocess"
 
 # Make the subfolders
-mkdir -p ${CODE_DIR} ${DATA_DIR} ${OUTPUT_DIR} ${IMAGE_DIR} ${MOVIE_DIR} ${POSTPROCESS_DIR}
+mkdir -p "$CODE_DIR" "$DATA_DIR" "$OUTPUT_DIR" "$IMAGE_DIR" "$MOVIE_DIR" "$POSTPROCESS_DIR"
 quit_if_fail "Failed to create subfolders in destination directory."
 
 # Organizing files
