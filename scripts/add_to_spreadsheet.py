@@ -4,9 +4,11 @@ import os
 import sys
 import yaml
 import pandas as pd
+from materials_commons.cli.file_functions import make_mcpath
+from materials_commons.cli.functions import project_path
 
 
-def read_yaml_parameters(file_path, source_directory):
+def read_yaml_parameters(file_path, abs_source_directory):
     """Read parameters from the YAML file and add Calculation, Description, Observations, and additional file paths."""
     with open(file_path, "r") as file:
         data = yaml.safe_load(file)
@@ -14,7 +16,7 @@ def read_yaml_parameters(file_path, source_directory):
     parameters = data.get("inputs", [])[0].get("parameters", {})
 
     # Extract only the last part of the source directory
-    calculation_name = os.path.basename(os.path.normpath(source_directory))
+    calculation_name = os.path.basename(os.path.normpath(abs_source_directory))
 
     # Prompt user for Description
     user_description = input(
@@ -26,21 +28,24 @@ def read_yaml_parameters(file_path, source_directory):
         f"Enter observations for {calculation_name} (press Enter to skip): "
     ).strip()
 
+    # Define project relative source directory
+    proj_local_path = project_path(abs_source_directory)
+    calc_rel_path=make_mcpath(proj_local_path,abs_source_directory)
     # Write both to Info.md
-    info_file_path = os.path.join(source_directory, "Info.md")
-    info_relative_path = os.path.join("/", calculation_name, "Info.md")
+    info_file_path = os.path.join(abs_source_directory, "Info.md")
+    info_relative_path = os.path.join(calc_rel_path, "Info.md")
     with open(info_file_path, "w") as info_file:
         info_file.write(f"# Description\n{user_description}\n\n")
         info_file.write(f"# Observations\n{user_observations}\n")
 
     # Automatically set additional file paths
-    code_relative_path = os.path.join("/", calculation_name, "code")
-    vtk_relative_path = os.path.join("/", calculation_name, "data", "vtk")
+    code_relative_path = os.path.join(calc_rel_path, "code")
+    vtk_relative_path = os.path.join(calc_rel_path, "data", "vtk")
     postprocess_relative_path = os.path.join(
-        "/", calculation_name, "data", "postprocess"
+        calc_rel_path, "data", "postprocess"
     )
-    images_relative_path = os.path.join("/", calculation_name, "data", "images")
-    movies_relative_path = os.path.join("/", calculation_name, "data", "movies")
+    images_relative_path = os.path.join(calc_rel_path, "data", "images")
+    movies_relative_path = os.path.join(calc_rel_path, "data", "movies")
 
     # Add columns: c:Calculation, file:Info:, file paths, and parameters with "p:" prefix
     param_dict = {
@@ -109,13 +114,17 @@ def main():
     source_directory = sys.argv[1]
     target_file = sys.argv[2]
 
+    # Get absolute path of source directory
+    abs_source_directory = os.path.abspath(source_directory)
+
     yaml_file = os.path.join(source_directory, "simlog.yaml")
 
     if not os.path.exists(yaml_file):
         print(f"Error: YAML file not found in {source_directory}")
         sys.exit(1)
 
-    param_dict = read_yaml_parameters(yaml_file, source_directory)
+    #defining parameter dictionary
+    param_dict = read_yaml_parameters(yaml_file, abs_source_directory)
     write_to_excel(param_dict, target_file)
 
 
