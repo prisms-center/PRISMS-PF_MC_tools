@@ -39,6 +39,7 @@ def read_yaml_parameters(file_path, abs_source_directory):
         info_file.write(f"# Observations\n{user_observations}\n")
 
     # Automatically set additional file paths
+    input_relative_path = os.path.join(calc_rel_path, "input") 
     code_relative_path = os.path.join(calc_rel_path, "code")
     vtk_relative_path = os.path.join(calc_rel_path, "results", "vtk")
     postprocess_relative_path = os.path.join(
@@ -51,6 +52,7 @@ def read_yaml_parameters(file_path, abs_source_directory):
     param_dict = {
         "c:Calculation": calculation_name,
         "file:Info:": info_relative_path,
+        "file:Input:": input_relative_path,
         "file:Code:": code_relative_path,
         "file:vtk_files:": vtk_relative_path,
         "file:Postprocess_files:": postprocess_relative_path,

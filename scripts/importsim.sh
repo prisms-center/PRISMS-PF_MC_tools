@@ -196,7 +196,8 @@ color_echo ${INFO} "Source directory: ${SRC_DIR}"
 color_echo ${INFO} "Destination directory: ${DST_DIR}"
 echo
 
-# Collect the various subfolders that we organize results data into
+# Collect the various subfolders that we organize data into
+INPUT_DIR="${DST_DIR}/input"
 CODE_DIR="${DST_DIR}/code"
 RESULTS_DIR="${DST_DIR}/results"
 OUTPUT_DIR="${RESULTS_DIR}/vtk"
@@ -205,12 +206,154 @@ MOVIE_DIR="${RESULTS_DIR}/movies"
 POSTPROCESS_DIR="${RESULTS_DIR}/postprocess"
 
 # Make the subfolders
-mkdir -p "$CODE_DIR" "$RESULTS_DIR" "$OUTPUT_DIR" "$IMAGE_DIR" "$MOVIE_DIR" "$POSTPROCESS_DIR"
+mkdir -p "$INPUT_DIR" "$CODE_DIR" "$RESULTS_DIR" "$OUTPUT_DIR" "$IMAGE_DIR" "$MOVIE_DIR" "$POSTPROCESS_DIR"
 quit_if_fail "Failed to create subfolders in destination directory."
 
+#############################################################
+# Find and select .prm files
+echo
+color_echo ${INFO} "Searching for .prm files in source directory..."
+
+# Find all .prm files recursively and store in an array
+prm_files=()
+while IFS= read -r file; do
+	prm_files+=("$file")
+done < <(find "${SRC_DIR}" -name "*.prm" -type f | sort)
+
+if [ ${#prm_files[@]} -eq 0 ]; then
+	color_echo ${WARN} "No .prm files found in ${SRC_DIR}"
+else
+	echo
+	color_echo ${GOOD} "Found ${#prm_files[@]} .prm file(s). Select the file used in the simulation:"
+	echo
+	
+	if [ ${#prm_files[@]} -eq 1 ]; then
+		# Automatically select the only file without prompting
+		selected_prm_file="${prm_files[0]}"
+		color_echo ${GOOD} "Only one .prm file found. Automatically selected: ${selected_prm_file}"
+	else
+		# Display numbered list
+		for i in "${!prm_files[@]}"; do
+			echo "  $((i + 1)). ${prm_files[$i]}"
+		done
+		
+		echo
+		# Prompt user to select a file
+		read -p "Select a .prm file by entering its number (1-${#prm_files[@]}): " selection
+		
+		# Validate selection
+		if ! [[ "$selection" =~ ^[0-9]+$ ]] || [ "$selection" -lt 1 ] || [ "$selection" -gt ${#prm_files[@]} ]; then
+			color_echo ${BAD} "Invalid selection. Please enter a number between 1 and ${#prm_files[@]}."
+			exit 2
+		fi
+		
+		# Get the selected file (convert to 0-indexed)
+		selected_prm_file="${prm_files[$((selection - 1))]}"
+		color_echo ${GOOD} "Selected: ${selected_prm_file}"
+	fi
+	
+	# Copy or move the selected .prm file to INPUT_DIR
+	if [ "$COPY_OUTPUT" != "ON" ]; then
+		mv -- "${selected_prm_file}" "${INPUT_DIR}/"
+		quit_if_fail "Failed to move ${selected_prm_file}"
+	else
+		cp -- "${selected_prm_file}" "${INPUT_DIR}/"
+		quit_if_fail "Failed to copy ${selected_prm_file}"
+	fi
+	
+	color_echo ${GOOD} ".prm file successfully processed."
+	
+	#############################################################
+	# Parse the selected .prm file and identify referenced files
+	echo
+	color_echo ${INFO} "Parsing .prm file to identify referenced data files..."
+	
+	# Get the directory where the selected .prm file is located
+	prm_file_dir=$(dirname "${selected_prm_file}")
+	
+	# Extract filenames with extensions .txt, .dat, .vtk, .vtu, or .pvtu
+	# Also extract filenames that appear after "filename = " (flexible spacing)
+	# Using grep to find patterns that look like filenames
+	referenced_files=()
+	while IFS= read -r file; do
+		referenced_files+=("$file")
+	done < <((grep -oE '[a-zA-Z0-9_./\-]+\.(txt|dat|vtk|vtu|pvtu)' "${selected_prm_file}"; sed -nE 's/.*filename[[:space:]]*=[[:space:]]*([a-zA-Z0-9_./\-]+).*/\1/p' "${selected_prm_file}") | sort -u)
+	
+	if [ ${#referenced_files[@]} -eq 0 ]; then
+		color_echo ${WARN} "No data files (.txt, .dat, .vtk, .vtu, .pvtu) referenced in the .prm file."
+	else
+		echo
+		color_echo ${GOOD} "Found ${#referenced_files[@]} unique filename(s) referenced in the .prm file:"
+		echo
+		
+		# For each referenced filename, search for it recursively in the prm file's directory
+		all_found_files=()  # Array to store all found files
+		
+		for ref_file in "${referenced_files[@]}"; do
+			# Get just the basename (filename without path) from the reference
+			filename=$(basename "${ref_file}")
+			
+			echo "  Searching for: ${filename}"
+			
+			# Search recursively in the prm file's directory
+			found_paths=()
+			while IFS= read -r path; do
+				found_paths+=("$path")
+			done < <(find "${prm_file_dir}" -name "${filename}" -type f)
+			
+			# If no file found and filename has no extension, search in SRC_DIR for files with vtk/vtu/pvtu extensions
+			if [ ${#found_paths[@]} -eq 0 ] && [[ ! "$filename" =~ \. ]]; then
+				while IFS= read -r path; do
+					found_paths+=("$path")
+				done < <(find "${SRC_DIR}" \( -name "${filename}.vtk" -o -name "${filename}.vtu" -o -name "${filename}.pvtu" \) -type f)
+			fi
+			
+			file_count=${#found_paths[@]}
+			
+			if [ "$file_count" -eq 0 ]; then
+				color_echo ${WARN} "    → Not found"
+			elif [ "$file_count" -eq 1 ]; then
+				color_echo ${GOOD} "    → Found: ${found_paths[0]}"
+				# Add to the list of all found files
+				all_found_files+=("${found_paths[0]}")
+			else
+				color_echo ${BAD} "    → ERROR: Found ${file_count} files with the same name:"
+				for fp in "${found_paths[@]}"; do
+					echo "       - ${fp}"
+				done
+				color_echo ${BAD} "Multiple files with the same name found. Aborting script."
+				exit 2
+			fi
+		done
+		
+		echo
+		color_echo ${GOOD} "All referenced data files validated successfully."
+		
+		# Copy all found files to INPUT_DIR
+		if [ ${#all_found_files[@]} -gt 0 ]; then
+			echo
+			color_echo ${INFO} "Copying referenced data files to INPUT_DIR..."
+			
+			local found_file
+			for found_file in "${all_found_files[@]}"; do
+				if [ "$COPY_OUTPUT" != "ON" ]; then
+					mv -- "${found_file}" "${INPUT_DIR}/"
+					quit_if_fail "Failed to move ${found_file}"
+				else
+					cp -- "${found_file}" "${INPUT_DIR}/"
+					quit_if_fail "Failed to copy ${found_file}"
+				fi
+			done
+			
+			color_echo ${GOOD} "All referenced data files successfully processed."
+		fi
+	fi
+fi
+
+#############################################################
 # Organizing files
-copy_or_move_files "*.cc,*.c,*.cpp,*.cxx,*.h,*.in,*.hpp,*.prm,*.py,*.sh,*.json,*.yaml,*.yml" "${SRC_DIR}" "${CODE_DIR}" "ON"
-copy_or_move_files "*.vtk,*.vtu,*.pvtu" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
+copy_or_move_files "*.cc,*.c,*.cpp,*.cxx,*.h,*.in,*.hpp,*.py,*.sh,*.json,*.yaml,*.yml" "${SRC_DIR}" "${CODE_DIR}" "ON"
+copy_or_move_files "solution*.vtk,solution*.vtu,solution*.pvtu" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
 copy_or_move_files "*.md" "${SRC_DIR}" "${DST_DIR}" "ON"
 
 # Special case: Handle single file copy for CMakeLists.txt and integratedFields.txt
