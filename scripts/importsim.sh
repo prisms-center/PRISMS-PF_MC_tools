@@ -196,16 +196,16 @@ color_echo ${INFO} "Source directory: ${SRC_DIR}"
 color_echo ${INFO} "Destination directory: ${DST_DIR}"
 echo
 
-# Collect the various subfolders that we organize data into
+# Collect the various subfolders that we organize results data into
 CODE_DIR="${DST_DIR}/code"
-DATA_DIR="${DST_DIR}/data"
-OUTPUT_DIR="${DATA_DIR}/vtk"
-IMAGE_DIR="${DATA_DIR}/images"
-MOVIE_DIR="${DATA_DIR}/movies"
-POSTPROCESS_DIR="${DATA_DIR}/postprocess"
+RESULTS_DIR="${DST_DIR}/results"
+OUTPUT_DIR="${RESULTS_DIR}/vtk"
+IMAGE_DIR="${RESULTS_DIR}/images"
+MOVIE_DIR="${RESULTS_DIR}/movies"
+POSTPROCESS_DIR="${RESULTS_DIR}/postprocess"
 
 # Make the subfolders
-mkdir -p "$CODE_DIR" "$DATA_DIR" "$OUTPUT_DIR" "$IMAGE_DIR" "$MOVIE_DIR" "$POSTPROCESS_DIR"
+mkdir -p "$CODE_DIR" "$RESULTS_DIR" "$OUTPUT_DIR" "$IMAGE_DIR" "$MOVIE_DIR" "$POSTPROCESS_DIR"
 quit_if_fail "Failed to create subfolders in destination directory."
 
 # Organizing files
