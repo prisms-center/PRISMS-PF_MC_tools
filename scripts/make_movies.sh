@@ -31,12 +31,12 @@ if [ ! -d "$input_dir" ]; then
 fi
 
 # Create output directory if it doesn't exist
-mkdir -p "$input_dir/data/movies"
+mkdir -p "$input_dir/results/movies"
 
 # Loop over all specified fields (excluding the last argument, which is the input directory)
 for field in "${@:1:$#-1}"; do
-    image_dir="$input_dir/data/images"
-    output_movie="$input_dir/data/movies/${field}_movie.mp4"
+    image_dir="$input_dir/results/images"
+    output_movie="$input_dir/results/movies/${field}_movie.mp4"
 
     # Find matching images (ensuring absolute paths)
     png_files=($(find "$image_dir" -type f -name "${field}_frame_*.png" 2>/dev/null | sort -V))

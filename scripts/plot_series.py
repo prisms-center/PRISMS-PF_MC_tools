@@ -30,7 +30,7 @@ print("Variables to plot: {}".format(variables))
 
 # Step 1: Open a database (the whole .vtu time series)
 # Step 1: Detect available .vtu database pattern
-vtk_dir = os.path.join(sim_dir, "data", "vtk")
+vtk_dir = os.path.join(sim_dir, "results", "vtk")
 
 if len(glob.glob(os.path.join(vtk_dir, "solution_*.vtu"))) > 0:
     dbname_pf = f"{vtk_dir}/solution_*.vtu database"
@@ -66,7 +66,7 @@ for var in variables:
 
         # Set save window attributes
         SaveWindowAtts = SaveWindowAttributes()
-        SaveWindowAtts.fileName = "{}/data/images/{}_frame_{}".format(sim_dir, var, state)
+        SaveWindowAtts.fileName = "{}/results/images/{}_frame_{}".format(sim_dir, var, state)
         SetSaveWindowAttributes(SaveWindowAtts)
         SaveWindow()
 

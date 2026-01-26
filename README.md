@@ -45,7 +45,7 @@ All of the scripts and commands below described below should be run under your *
 
 ## Importing data from a simulation into the project directory
 
-The script <code>importsim.sh</code> copies data from a source directory where the simulation code and data files are located into a new destination directory within your project directory.
+The script <code>importsim.sh</code> copies data from a source directory where the simulation code, input and results files are located into a new destination directory within your project directory.
 Usage
 ```
 $ mcpf importsim --copy=<ON/OFF> <source directory> <destination directory>
@@ -58,7 +58,7 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
                                  ├── **code** <br>
                                  ├── description.txt <br>
                                  ├── observations.txt <br>
-                                 ├── **data** <br>
+                                 ├── **results** <br>
                                             ├── **images** <br>
                                             ├── **movies** <br>
                                             ├── **postprocess** <br>

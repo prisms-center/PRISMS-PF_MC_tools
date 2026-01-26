@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    prm_file_path = args.path + "/code/parameters.prm"
+    prm_file_path = args.path + "/input/parameters.prm"
     yaml_output_path = args.path + "/simlog.yaml"
 
     # Parse the .prm file
