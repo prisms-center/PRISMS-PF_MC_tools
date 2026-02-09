@@ -55,9 +55,10 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
 ├── **project directory** <br>
            ├── **study directory 1** <br>
                       ├── **simulation directory 1** (destination directory) <br>
-                                 ├── **code** <br>
                                  ├── description.txt <br>
                                  ├── observations.txt <br>
+                                 ├── **code** <br>
+                                 ├── **input** <br>
                                  ├── **results** <br>
                                             ├── **images** <br>
                                             ├── **movies** <br>
