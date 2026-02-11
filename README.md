@@ -55,16 +55,16 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
 ├── **project directory** <br>
            ├── **study directory 1** <br>
                       ├── **simulation directory 1** (destination directory) <br>
-                                 ├── simlog.yaml <br> (simulation metadata; created later with generate_yaml)
-                                 ├── description.txt <br> (relevant information about this simulation)
-                                 ├── observations.txt <br> (relevant information about the simulation results)
-                                 ├── **code** <br> (code files)
-                                 ├── **input** <br> (input and parameters files)
+                                 ├── simlog.yaml (simulation metadata; created later with generate_yaml) <br>
+                                 ├── description.txt (relevant information about this simulation) <br> 
+                                 ├── observations.txt (relevant information about the simulation results) <br> 
+                                 ├── **code** (code files) <br>
+                                 ├── **input** (input and parameters files) <br>
                                  ├── **results** <br>
-                                            ├── **images** <br> (image files; created later with plot_series)
-                                            ├── **movies** <br> (animation files; created later make_movies)
+                                            ├── **images** (image files; created later with plot_series) <br> 
+                                            ├── **movies** (animation files; created later make_movies) <br> 
                                             ├── **postprocess** <br> (postprocess files)
-                                            ├── **vtk** <br> (simulation data output files)
+                                            ├── **vtk** (simulation data output files) <br> 
                       ├── **simulation directory 2** (destination directory) <br>
            
 Options:
