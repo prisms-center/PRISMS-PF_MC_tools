@@ -55,15 +55,16 @@ This will copy most of the contents of <code>\<source directory\></code> into <c
 ├── **project directory** <br>
            ├── **study directory 1** <br>
                       ├── **simulation directory 1** (destination directory) <br>
-                                 ├── description.txt <br>
-                                 ├── observations.txt <br>
-                                 ├── **code** <br>
-                                 ├── **input** <br>
+                                 ├── simlog.yaml <br> (simulation metadata; created later with generate_yaml)
+                                 ├── description.txt <br> (relevant information about this simulation)
+                                 ├── observations.txt <br> (relevant information about the simulation results)
+                                 ├── **code** <br> (code files)
+                                 ├── **input** <br> (input and parameters files)
                                  ├── **results** <br>
-                                            ├── **images** <br>
-                                            ├── **movies** <br>
-                                            ├── **postprocess** <br>
-                                            ├── **vtk** <br>
+                                            ├── **images** <br> (image files; created later with plot_series)
+                                            ├── **movies** <br> (animation files; created later make_movies)
+                                            ├── **postprocess** <br> (postprocess files)
+                                            ├── **vtk** <br> (simulation data output files)
                       ├── **simulation directory 2** (destination directory) <br>
            
 Options:
