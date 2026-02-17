@@ -52,20 +52,20 @@ $ mcpf importsim --copy=<ON/OFF> <source directory> <destination directory>
 ```
 This will copy most of the contents of <code>\<source directory\></code> into <code>\<destination directory\></code>, organizing the files in the following way
 
-├── **project directory** <br>
-           ├── **study directory 1** <br>
-                      ├── **simulation directory 1** (destination directory) <br>
-                                 ├── simlog.yaml (simulation metadata; created later with generate_yaml) <br>
-                                 ├── description.txt (relevant information about this simulation) <br> 
-                                 ├── observations.txt (relevant information about the simulation results) <br> 
-                                 ├── **code** (code files) <br>
-                                 ├── **input** (input and parameters files) <br>
-                                 ├── **results** <br>
-                                            ├── **images** (image files; created later with plot_series) <br> 
-                                            ├── **movies** (animation files; created later make_movies) <br> 
-                                            ├── **postprocess** <br> (postprocess files)
-                                            ├── **vtk** (simulation data output files) <br> 
-                      ├── **simulation directory 2** (destination directory) <br>
+└── **project directory** <br>
+&nbsp;&nbsp;&nbsp;&nbsp;├── **study directory 1** <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **simulation directory 1** (destination directory) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── simlog.yaml (simulation metadata; created later with generate_yaml) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── description.txt (relevant information about this simulation) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── observations.txt (relevant information about the simulation results) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **code** (code files) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **input** (input and parameters files) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **results** <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **images** (image files; created later with plot_series) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **movies** (animation files; created later make_movies) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **postprocess** (postprocess files) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **vtk** (simulation data output files) <br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;├── **simulation directory 2** (destination directory) <br>
            
 Options:
 
