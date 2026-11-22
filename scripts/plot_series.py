@@ -28,20 +28,36 @@ variables = sys.argv[1:-1]
 print("Simulation directory: {}".format(sim_dir))
 print("Variables to plot: {}".format(variables))
 
-# Step 1: Open a database (the whole .vtu time series)
-# Step 1: Detect available .vtu database pattern
+# Step 1: Detect available .vtu files and open the database
 vtk_dir = os.path.join(sim_dir, "results", "vtk")
 
-if len(glob.glob(os.path.join(vtk_dir, "solution_*.vtu"))) > 0:
-    dbname_pf = f"{vtk_dir}/solution_*.vtu database"
-elif len(glob.glob(os.path.join(vtk_dir, "solution-*.vtu"))) > 0:
-    dbname_pf = f"{vtk_dir}/solution-*.vtu database"
-else:
-    print("Error: No .vtu files found matching either 'solution_*.vtu' or 'solution-*.vtu'")
+# Detect the naming convention
+files = sorted(glob.glob(os.path.join(vtk_dir, "solution_*.vtu")))
+
+if not files:
+    files = sorted(glob.glob(os.path.join(vtk_dir, "solution-*.vtu")))
+
+if not files:
+    print("Error: No .vtu files found matching either "
+          "'solution_*.vtu' or 'solution-*.vtu'")
     sys.exit(1)
 
+# Open a single file directly or create a time-series database
+if len(files) == 1:
+    dbname_pf = files[0]
+else:
+    dbname_pf = os.path.join(vtk_dir, "solution.visit")
+
+    with open(dbname_pf, "w") as f:
+        for filename in files:
+            f.write(os.path.basename(filename) + "\n")
+
+print(f"Number of .vtu files found: {len(files)}")
 print(f"Opening database: {dbname_pf}")
-OpenDatabase(dbname_pf)
+
+if not OpenDatabase(dbname_pf):
+    print("Error: Failed to open database")
+    sys.exit(1)
 
 for var in variables:
     print("Plotting variable: {}".format(var))
