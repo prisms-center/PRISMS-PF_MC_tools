@@ -355,6 +355,7 @@ fi
 copy_or_move_files "*.cc,*.c,*.cpp,*.cxx,*.h,*.in,*.hpp,*.py,*.sh,*.json,*.yaml,*.yml" "${SRC_DIR}" "${CODE_DIR}" "ON"
 copy_or_move_files "solution*.vtk,solution*.vtu,solution*.pvtu" "${SRC_DIR}" "${OUTPUT_DIR}" "${COPY_OUTPUT}"
 copy_or_move_files "*.md" "${SRC_DIR}" "${DST_DIR}" "ON"
+copy_or_move_files "*.log" "${SRC_DIR}" "${RESULTS_DIR}" "ON"
 
 # Special case: Handle single file copy for CMakeLists.txt and integratedFields.txt
 if [ -f "${SRC_DIR}/CMakeLists.txt" ]; then
